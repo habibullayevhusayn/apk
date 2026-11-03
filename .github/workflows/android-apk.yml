@@ -1,26 +1,50 @@
-# PitchPlan Android starter
 
-This package contains the supplied PitchPlan website plus a Capacitor Android wrapper configuration and basic service-worker caching.
+name: Build PitchPlan APK
 
-## Build APK
-Requirements: Node.js LTS, Android Studio, Android SDK.
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
 
-```bash
-npm install
-npx cap add android
-npx cap sync android
-npx cap open android
-```
+jobs:
+  build:
+    runs-on: ubuntu-latest
 
-In Android Studio: Build > Build Bundle(s) / APK(s) > Build APK(s).
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
 
-## Offline notes
-The service worker caches the entry page and same-origin resources as they are visited. For reliable offline poster creation, test every poster workflow and ensure its fonts, templates, images, and rendering libraries are local. Features requiring live scores, remote APIs, or cloud AI will still require internet. Offline AI image generation needs a compatible on-device model and is not included automatically.
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
 
-## Automatic APK build (GitHub Actions)
-1. Create a private GitHub repository and upload this project.
-2. Open Actions and run **Build PitchPlan Android APK** (or push to main/master).
-3. Download the `pitchplan-debug-apk` artifact from the completed workflow run.
-4. The artifact contains `app-debug.apk`, ready for testing on Android.
+      - name: Install dependencies
+        run: npm install
 
-The supplied PitchPlan logo is prepared as `assets/icon.png` and the workflow generates Android launcher icons.
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Add Android platform
+        run: npx cap add android
+
+      - name: Sync Android
+        run: npx cap sync android
+
+      - name: Build APK
+        run: |
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleDebug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: PitchPlan-APK
+          path: android/app/build/outputs/apk/debug/app-debug.apk
