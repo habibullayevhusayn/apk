@@ -33,8 +33,11 @@ jobs:
           yes | $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --licenses
           $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager "platform-tools" "platforms;android-35" "build-tools;35.0.0"
 
+      - name: Install Capacitor CLI
+        run: npm install @capacitor/core @capacitor/cli @capacitor/android
+
       - name: Add Android platform
-        run: npx cap add android
+        run: npx cap add android || true
 
       - name: Sync Android
         run: npx cap sync android
