@@ -1,0 +1,11 @@
+{
+  "appId": "uz.pitchplan.app",
+  "appName": "PitchPlan",
+  "webDir": ".",
+  "server": {
+    "androidScheme": "https"
+  },
+  "android": {
+    "allowMixedContent": false
+  }
+}

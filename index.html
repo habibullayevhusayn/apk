@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="uz" class="is-intro-playing">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="color-scheme" content="only light">
+    <meta name="description" content="PitchPlan bilan futbol uchrashuvlari jadvalini yarating, tahrirlang va rasm sifatida yuklab oling.">
+    <title>PitchPlan — futbol jadvali dizayneri</title>
+    <link rel="icon" type="image/png" sizes="512x512" href="./images/pitchplan-icon.png ">
+    <link rel="apple-touch-icon" href="./images/pitchplan-icon.png?v=2">
+    <link rel="stylesheet" href="css/styles.css?v=104">
+    <style>
+        html.is-intro-playing,
+        html.is-intro-playing body { overflow: hidden !important; }
+        #pitchplan-intro-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 2147483647;
+            display: block;
+            width: 100%;
+            height: 100vh;
+            height: 100dvh;
+            border: 0;
+            background: #329bd0;
+        }
+    </style>
+    <script>
+        (() => {
+            let finished = false;
+            let fallbackTimer;
+            const finishIntro = () => {
+                if (finished) return;
+                finished = true;
+                window.clearTimeout(fallbackTimer);
+                document.documentElement.classList.remove("is-intro-playing");
+                document.getElementById("pitchplan-intro-overlay")?.remove();
+            };
+            window.addEventListener("message", event => {
+                const introFrame = document.getElementById("pitchplan-intro-overlay");
+                if (event.source !== introFrame?.contentWindow || event.origin !== window.location.origin ||
+                    event.data?.type !== "pitchplan-intro-finished") return;
+                finishIntro();
+            });
+            fallbackTimer = window.setTimeout(finishIntro, 3400);
+        })();
+    </script>
+</head>
+<body>
+    <iframe
+        id="pitchplan-intro-overlay"
+        src="video/pitch_plan_intro_5s_small_logo.html?v=2"
+        title="PitchPlan intro"
+        aria-label="PitchPlan intro animatsiyasi"
+        allow="autoplay"
+    ></iframe>
+    <header class="topbar">
+        <a class="brand" href="#/home" aria-label="PitchPlan bosh sahifasi">
+            <img class="brand-icon" src="./images/Pitch.png" alt="">
+            <span class="brand-name">PitchPlan</span>
+        </a>
+        <span class="top-note">Sport jadvalingizni bir necha daqiqada yarating!</span>
+    </header>
+
+    <main class="app-shell">
+        <aside class="app-sidebar" aria-label="Asosiy menyu">
+            <nav class="app-navigation">
+                <a class="app-nav-item is-active" href="#/home" data-app-section="home" aria-current="page">
+                    <img class="app-nav-icon" src="./images/menu-icons/home-svgrepo-com.svg" alt=""><span>Bosh sahifa</span>
+                </a>
+                <a class="app-nav-item" href="#/poster" data-app-section="templates">
+                    <img class="app-nav-icon" src="./images/menu-icons/poster.svg" alt=""><span>Poster yaratish</span>
+                </a>
+                <a class="app-nav-item" href="#/standings" data-app-section="live">
+                    <img class="app-nav-icon" src="./images/menu-icons/turnir-jadvali.svg" alt=""><span>Turnir jadvallari</span>
+                </a>
+                <a class="app-nav-item" href="#/matches" data-app-section="matches">
+                    <img class="app-nav-icon" src="./images/menu-icons/jonli-matchlar.svg" alt=""><span>O‘yinlar</span>
+                </a>
+            </nav>
+        </aside>
+        <div class="app-content">
+        <section class="home-view" id="home-view" aria-labelledby="home-heading">
+            <div class="intro section-banner section-banner--home">
+                <span class="home-eyebrow">pitchplan.uz STUDIO</span>
+                <h1 id="home-heading">Futbol dizayningiz shu yerdan boshlanadi</h1>
+                <p>Uchrashuv posterini yarating, jonli turnir jadvalini yoki Top-5 ligadagi o‘yinlarni kuzating.</p>
+            </div>
+            <div class="home-shortcuts">
+                <button type="button" class="home-shortcut" data-app-section="templates">
+                    <span class="home-shortcut-icon" aria-hidden="true"><img src="./images/menu-icons/poster.svg" alt=""></span>
+                    <span><strong>Poster yaratish</strong><small>Tayyor dizaynni tanlang va posterni tahrirlang</small></span>
+                    <span class="home-shortcut-arrow" aria-hidden="true">→</span>
+                </button>
+                <button type="button" class="home-shortcut" data-app-section="live">
+                    <span class="home-shortcut-icon live-shortcut-icon" aria-hidden="true"><img src="./images/menu-icons/turnir-jadvali.svg" alt=""></span>
+                    <span><strong>Turnir jadvallari</strong><small>Top-5, UCL, Saudiya ligalari va Angliya kuboklarini kuzating</small></span>
+                    <span class="home-shortcut-arrow" aria-hidden="true">→</span>
+                </button>
+                <button type="button" class="home-shortcut" data-app-section="matches">
+                    <span class="home-shortcut-icon live-shortcut-icon" aria-hidden="true"><img src="./images/menu-icons/jonli-matchlar.svg" alt=""></span>
+                    <span><strong>O‘yinlar</strong><small>Jonli hisob, statistika va jamoa tarkiblari</small></span>
+                    <span class="home-shortcut-arrow" aria-hidden="true">→</span>
+                </button>
+            </div>
+        </section>
+        <section class="home-view templates-view" id="templates-view" aria-labelledby="templates-heading" hidden>
+            <div class="intro section-banner section-banner--templates">
+                <h1 id="templates-heading">Poster shablonlari</h1>
+                <p>Tayyor dizaynni tanlang, so‘ng matnlar, ranglar va logolarni o‘zingizga moslang.</p>
+            </div>
+            <div class="template-gallery" aria-label="Tayyor shablonlar">
+                <a class="template-card" href="#/poster/jf" data-template="jf" aria-label="JADVAL shablonini ochish">
+                    <span class="template-card-image">
+                        <canvas class="template-preview" width="500" height="600" aria-label="JADVAL shabloni ko‘rinishi"></canvas>
+                    </span>
+                    <span class="template-card-details">
+                        <span class="template-card-title">JADVAL</span>
+                        <span class="template-card-description">Oq fonli, yashil vaqt kataklariga ega klassik jadval</span>
+                        <span class="template-card-action">Shablonni tahrirlash <span aria-hidden="true">→</span></span>
+                    </span>
+                </a>
+                <a class="template-card" href="#/poster/sf" data-template="sf" aria-label="RED STAR FUTBOL shablonini ochish">
+                    <span class="template-card-image">
+                        <canvas class="template-preview" width="500" height="600" aria-label="RED shabloni ko‘rinishi"></canvas>
+                    </span>
+                    <span class="template-card-details">
+                        <span class="template-card-title">RED STAR FUTBOL</span>
+                        <span class="template-card-description">To‘q qizil fon va markaziy vaqt ustunli jadval</span>
+                        <span class="template-card-action">Shablonni tahrirlash <span aria-hidden="true">→</span></span>
+                    </span>
+                </a>
+                <a class="template-card" href="#/poster/result" data-template="result" aria-label="MATCH RESULT shablonini ochish">
+                    <span class="template-card-image">
+                        <canvas class="template-preview" width="500" height="600" aria-label="MATCH RESULT shabloni ko‘rinishi"></canvas>
+                    </span>
+                    <span class="template-card-details">
+                        <span class="template-card-title">MATCH RESULT</span>
+                        <span class="template-card-description">Foto fonli yakuniy hisob, klublar va gol mualliflari</span>
+                        <span class="template-card-action">Shablonni tahrirlash <span aria-hidden="true">→</span></span>
+                    </span>
+                </a>
+                <a class="template-card" href="#/poster/today-results" data-template="today-results" aria-label="BUGUNGI NATIJALAR shablonini ochish">
+                    <span class="template-card-image">
+                        <canvas class="template-preview" width="500" height="600" aria-label="BUGUNGI NATIJALAR shabloni ko‘rinishi"></canvas>
+                    </span>
+                    <span class="template-card-details">
+                        <span class="template-card-title">BUGUNGI NATIJALAR</span>
+                        <span class="template-card-description">Har kuni 06:00 dan hozirgacha yakunlangan o‘yinlar va hisoblar</span>
+                        <span class="template-card-action">Shablonni tahrirlash <span aria-hidden="true">→</span></span>
+                    </span>
+                </a>
+                <a class="template-card" href="#/poster/football-news" data-template="football-news" aria-label="FUTBOL YANGILIKLARI shablonini ochish">
+                    <span class="template-card-image">
+                        <canvas class="template-preview" width="500" height="600" aria-label="FUTBOL YANGILIKLARI shabloni ko‘rinishi"></canvas>
+                    </span>
+                    <span class="template-card-details">
+                        <span class="template-card-title">FUTBOL YANGILIKLARI</span>
+                        <span class="template-card-description">Suratli fon, sana va pastki logo tahrirlanadigan yangiliklar posteri</span>
+                        <span class="template-card-action">Shablonni tahrirlash <span aria-hidden="true">→</span></span>
+                    </span>
+                </a>
+                <a class="template-card" href="#/poster/photo-quote" data-template="photo-quote" aria-label="FOTO POSTER shablonini ochish">
+                    <span class="template-card-image">
+                        <canvas class="template-preview" width="500" height="600" aria-label="FOTO POSTER shabloni ko‘rinishi"></canvas>
+                    </span>
+                    <span class="template-card-details">
+                        <span class="template-card-title">FOTO POSTER</span>
+                        <span class="template-card-description">Yuqori o‘ngda kanal logosi va pastda shisha effektli yozuv</span>
+                        <span class="template-card-action">Shablonni tahrirlash <span aria-hidden="true">→</span></span>
+                    </span>
+                </a>
+                <a class="template-card" href="#/poster/football-lux" data-template="football-lux" aria-label="LUX FOOTBALL NEWS shablonini ochish">
+                    <span class="template-card-image">
+                        <canvas class="template-preview" width="500" height="500" aria-label="LUX FOOTBALL NEWS shabloni ko‘rinishi"></canvas>
+                    </span>
+                    <span class="template-card-details">
+                        <span class="template-card-title">LUX FOOTBALL NEWS</span>
+                        <span class="template-card-description">1:1 foto poster, kanal logosi va ikki rangli sarlavha bilan</span>
+                        <span class="template-card-action">Shablonni tahrirlash <span aria-hidden="true">→</span></span>
+                    </span>
+                </a>
+                <a class="template-card" href="#/poster/telegram-promo" data-template="telegram-promo" aria-label="TELEGRAM POSTER shablonini ochish">
+                    <span class="template-card-image">
+                        <canvas class="template-preview" width="500" height="600" aria-label="TELEGRAM POSTER shabloni ko‘rinishi"></canvas>
+                    </span>
+                    <span class="template-card-details">
+                        <span class="template-card-title">TELEGRAM POSTER</span>
+                        <span class="template-card-description">Fon rasmi, yuqori o‘ngda logo va pastda Telegram manzili</span>
+                        <span class="template-card-action">Shablonni tahrirlash <span aria-hidden="true">→</span></span>
+                    </span>
+                </a>
+                <a class="template-card" href="#/poster/matchday-poster" data-template="matchday-poster" aria-label="SPORT UZ MATCHDAY shablonini ochish">
+                    <span class="template-card-image">
+                        <canvas class="template-preview" width="500" height="667" aria-label="SPORT UZ MATCHDAY shabloni ko‘rinishi"></canvas>
+                    </span>
+                    <span class="template-card-details">
+                        <span class="template-card-title">SPORT UZ MATCHDAY</span>
+                        <span class="template-card-description">APL o‘yini uchun futbolchilar, klublar va matchday tafsilotlari</span>
+                        <span class="template-card-action">Shablonni tahrirlash <span aria-hidden="true">→</span></span>
+                    </span>
+                </a>
+                <a class="template-card" href="#/poster/football-stats" data-template="football-stats" aria-label="PLAYER STATS shablonini ochish">
+                    <span class="template-card-image">
+                        <canvas class="template-preview" width="500" height="667" aria-label="PLAYER STATS shabloni ko‘rinishi"></canvas>
+                    </span>
+                    <span class="template-card-details">
+                        <span class="template-card-title">PLAYER STATS</span>
+                        <span class="template-card-description">Futbolchi statistikasi, markaziy info bloki va pastki logo</span>
+                        <span class="template-card-action">Shablonni tahrirlash <span aria-hidden="true">→</span></span>
+                    </span>
+                </a>
+                <a class="template-card" href="#/poster/monthly-club-fixtures" data-template="monthly-club-fixtures" aria-label="Oylik klub uchrashuvlari shablonini ochish">
+                    <span class="template-card-image">
+                        <canvas class="template-preview" width="500" height="625" aria-label="Oylik klub uchrashuvlari shabloni ko‘rinishi"></canvas>
+                    </span>
+                    <span class="template-card-details">
+                        <span class="template-card-title">OYLIK UCHRASHUVLAR</span>
+                        <span class="template-card-description">Klubni tanlang va shu oy ligalar hamda kuboklardagi uchrashuvlarini ko‘rsating</span>
+                        <span class="template-card-action">Shablonni tahrirlash <span aria-hidden="true">→</span></span>
+                    </span>
+                </a>
+                <a class="template-card" href="#/poster/matchlist" data-template="matchlist" aria-label="RUBY MATCHDAY shablonini ochish">
+                    <span class="template-card-image">
+                        <canvas class="template-preview" width="500" height="600" aria-label="RUBY MATCHDAY shabloni ko‘rinishi"></canvas>
+                    </span>
+                    <span class="template-card-details">
+                        <span class="template-card-title">RUBY MATCHDAY</span>
+                        <span class="template-card-description">Qizil-qora geometrik fon, markaziy vaqt ustuni va PitchPlan logolari</span>
+                        <span class="template-card-action">Shablonni tahrirlash <span aria-hidden="true">→</span></span>
+                    </span>
+                </a>
+            </div>
+        </section>
+        <section class="live-view" id="live-view" aria-labelledby="live-heading" hidden>
+            <div class="section-banner section-banner--standings">
+                <div class="live-heading">
+                    <div>
+                        <span class="home-eyebrow">FUTBOL · JONLI</span>
+                        <h1 id="live-heading">Turnir jadvallari</h1>
+                        <p>O‘ngoing o‘yinlar natijalari jadvalga vaqtincha qo‘shiladi.</p>
+                    </div>
+                    <span class="live-status" id="standings-status" role="status" aria-live="polite">
+                        <span class="live-status-dot" aria-hidden="true"></span><span id="standings-status-text">Jadval yuklanmoqda…</span>
+                    </span>
+                </div>
+                <nav class="live-league-tabs" id="live-league-tabs" aria-label="Futbol ligalari turnir jadvallari">
+                    <button type="button" class="live-league-tab is-active" data-live-league="eng.1" aria-pressed="true"><img src="./images/ligalar/english-premier-league.ee1e9b08.png" alt=""><span>Premier League</span></button>
+                    <button type="button" class="live-league-tab" data-live-league="eng.fa" aria-pressed="false"><img src="./images/ligalar/fa-cup-badge.svg" alt=""><span>Angliya kubogi</span></button>
+                    <button type="button" class="live-league-tab" data-live-league="eng.league_cup" aria-pressed="false"><img src="./images/ligalar/efl-cup-badge.svg" alt=""><span>Angliya Liga kubogi</span></button>
+                    <button type="button" class="live-league-tab" data-live-league="esp.1" aria-pressed="false"><img src="./images/ligalar/LaLiga_logo_2023.svg.webp" alt=""><span>LaLiga</span></button>
+                    <button type="button" class="live-league-tab" data-live-league="ita.1" aria-pressed="false"><img src="./images/ligalar/serie_a-brandlogo.net_-512x512.png" alt=""><span>Serie A</span></button>
+                    <button type="button" class="live-league-tab" data-live-league="ger.1" aria-pressed="false"><img src="./images/ligalar/Bundesliga_logo_(2017).svg.webp" alt=""><span>Bundesliga</span></button>
+                    <button type="button" class="live-league-tab" data-live-league="fra.1" aria-pressed="false"><img src="./images/ligalar/ligue-1.webp" alt=""><span>Ligue 1</span></button>
+                    <button type="button" class="live-league-tab" data-live-league="uefa.champions" aria-pressed="false"><img src="./images/ligalar/UEFA_Champions_League-ucl.svg" alt=""><span>UCL</span></button>
+                    <button type="button" class="live-league-tab" data-live-league="ksa.1" aria-pressed="false"><img src="./images/ligalar/Roshn_Saudi_League_Logo.png" alt=""><span>Saudi Pro League</span></button>
+                </nav>
+            </div>
+            <div class="standings-card-heading">
+                <div class="standings-accessible-title"><strong id="standings-league-name">Premier League</strong><span id="standings-season"></span></div>
+                <div class="standings-actions">
+                    <label class="standings-top-six-control"><input id="standings-top-six" type="checkbox"><span>Top 6 yuklab olish</span></label>
+                    <button type="button" class="btn standings-logo-upload" id="standings-logo-upload">＋ Kanal logosi</button>
+                    <input id="standings-logo-input" type="file" accept="image/*" hidden>
+                    <label class="standings-logo-shape-control"><input id="standings-logo-circle" type="checkbox" disabled><span>Dumaloq logo</span></label>
+                    <button type="button" class="btn standings-download" id="standings-download" disabled>↓ JPG yuklab olish</button>
+                    <button type="button" class="btn standings-refresh" id="standings-refresh" aria-label="Jadvalni yangilash">⟳ Yangilash</button>
+                </div>
+            </div>
+            <div class="standings-poster">
+                <aside class="standings-brand-rail" aria-label="PitchPlan liga va mavsum">
+                    <img src="./images/Pitch.png" alt="PitchPlan" class="standings-brand-logo" id="standings-brand-logo">
+                    <img src="./images/ligalar/english-premier-league.ee1e9b08.png" alt="Liga logosi" class="standings-league-logo" id="standings-league-logo">
+                    <div class="standings-rail-title" id="standings-rail-title">Premier League</div>
+                    <div class="standings-rail-season" id="standings-rail-season"></div>
+                    <div class="standings-rail-round" id="standings-rail-round"></div>
+                </aside>
+                <div class="standings-poster-main">
+                    <div class="standings-table-wrap">
+                        <table class="standings-table">
+                            <thead><tr><th>Pos</th><th>Klub</th><th>P</th><th>G</th><th>D</th><th>M</th><th>GF</th><th>GA</th><th>GD</th><th>Points</th></tr></thead>
+                            <tbody id="standings-body"><tr><td colspan="10" class="standings-placeholder">Turnir jadvali yuklanmoqda…</td></tr></tbody>
+                        </table>
+                    </div>
+                    <p class="standings-footnote">Manba: pitchplan.uz</p>
+                </div>
+            </div>
+        </section>
+        <section class="live-matches-view" id="live-matches-view" aria-labelledby="live-matches-heading" hidden>
+            <div class="section-banner section-banner--matches">
+                <div class="live-heading">
+                    <div>
+                        <span class="home-eyebrow">PREMIER LEAGUE · FA CUP · EFL CUP · LALIGA · SERIE A · BUNDESLIGA · LIGUE 1</span>
+                        <h1 id="live-matches-heading">O‘yinlar</h1>
+                        <p>Jonli o‘yinlarni kuzating, shuningdek kelasi 24 soatdagi uchrashuvlar va jamoalar statistikasini ko‘ring.</p>
+                    </div>
+                    <div class="live-match-toolbar">
+                        <span class="live-status" id="live-matches-status" role="status" aria-live="polite">
+                            <span class="live-status-dot" aria-hidden="true"></span><span id="live-matches-status-text">Uchrashuvlar yuklanmoqda…</span>
+                        </span>
+                        <button type="button" class="btn live-match-refresh" id="live-matches-refresh">⟳ Yangilash</button>
+                        <button type="button" class="btn club-search-toggle" id="club-search-toggle" aria-expanded="false" aria-controls="club-search-panel">
+                            <span aria-hidden="true">⌕</span> Klub qidirish
+                        </button>
+                    </div>
+                </div>
+                <nav class="live-match-filters" id="live-match-filters" aria-label="O‘yinlarni liga bo‘yicha saralash">
+                    <button type="button" class="live-match-filter is-active" data-match-league="all" aria-pressed="true">Barchasi</button>
+                    <button type="button" class="live-match-filter" data-match-league="eng.1" aria-pressed="false"><img src="./images/ligalar/english-premier-league.ee1e9b08.png" alt=""><span>Premier League</span></button>
+                    <button type="button" class="live-match-filter" data-match-league="eng.fa" aria-pressed="false"><img src="./images/ligalar/fa-cup-badge.svg" alt=""><span>Angliya kubogi</span></button>
+                    <button type="button" class="live-match-filter" data-match-league="eng.league_cup" aria-pressed="false"><img src="./images/ligalar/efl-cup-badge.svg" alt=""><span>Angliya Liga kubogi</span></button>
+                    <button type="button" class="live-match-filter" data-match-league="esp.1" aria-pressed="false"><img src="./images/ligalar/LaLiga_logo_2023.svg.webp" alt=""><span>LaLiga</span></button>
+                    <button type="button" class="live-match-filter" data-match-league="ita.1" aria-pressed="false"><img src="./images/ligalar/serie_a-brandlogo.net_-512x512.png" alt=""><span>Serie A</span></button>
+                    <button type="button" class="live-match-filter" data-match-league="ger.1" aria-pressed="false"><img src="./images/ligalar/Bundesliga_logo_(2017).svg.webp" alt=""><span>Bundesliga</span></button>
+                    <button type="button" class="live-match-filter" data-match-league="fra.1" aria-pressed="false"><img src="./images/ligalar/ligue-1.webp" alt=""><span>Ligue 1</span></button>
+                    <button type="button" class="live-match-filter" data-match-league="uefa.champions" aria-pressed="false"><img src="./images/ligalar/UEFA_Champions_League-ucl.svg" alt=""><span>UCL</span></button>
+                    <button type="button" class="live-match-filter" data-match-league="ksa.1" aria-pressed="false"><img src="./images/ligalar/Roshn_Saudi_League_Logo.png" alt=""><span>Saudi Pro League</span></button>
+                </nav>
+            </div>
+            <nav class="live-match-state-filters" id="live-match-state-filters" aria-label="O‘yin holati bo‘yicha saralash">
+                <button type="button" class="live-match-state-filter is-active" data-match-state="live" aria-pressed="true"><span class="live-state-dot" aria-hidden="true"></span>Jonli</button>
+                <button type="button" class="live-match-state-filter" data-match-state="all" aria-pressed="false">Barcha o‘yinlar</button>
+                <button type="button" class="live-match-state-filter" data-match-state="upcoming" aria-pressed="false">Keyingi 24 soat</button>
+                <button type="button" class="live-match-state-filter" data-match-state="completed" aria-pressed="false">Oxirgi 24 soatda yakunlangan</button>
+                <button type="button" class="live-match-state-filter" data-match-state="ucl-month" aria-pressed="false">UCL · shu oy oxirigacha</button>
+            </nav>
+            <section class="club-search-panel" id="club-search-panel" aria-labelledby="club-search-heading" hidden>
+                <div class="club-search-copy">
+                    <h2 id="club-search-heading">Klub qidirish</h2>
+                    <p>O‘yinlar bo‘limidagi ligalardan klubni toping va uning tarkibi, jadvali hamda statistikasini ko‘ring.</p>
+                </div>
+                <label class="club-search-field">
+                    <span class="sr-only">Klub nomi</span>
+                    <input id="club-search-input" type="search" autocomplete="off" placeholder="Klub nomini kiriting…" aria-controls="club-search-results">
+                </label>
+                <p class="club-search-status" id="club-search-status" role="status" aria-live="polite">Klublar ro‘yxati yuklanmoqda…</p>
+                <div class="club-search-results" id="club-search-results" role="list"></div>
+            </section>
+            <div class="live-match-list" id="live-match-list" aria-live="polite">
+                <div class="live-match-empty"><span class="live-match-empty-icon" aria-hidden="true">◷</span><strong>O‘yinlar qidirilmoqda…</strong></div>
+            </div>
+        </section>
+        <section class="live-match-detail-view" id="live-match-detail-view" aria-labelledby="live-match-detail-title" hidden>
+            <button type="button" class="btn back-to-matches" id="back-to-matches">← O‘yinlarga qaytish</button>
+            <div id="live-match-detail-heading"></div>
+            <div class="live-match-detail-content" id="live-match-detail-content"></div>
+        </section>
+        <section class="club-profile-view" id="club-profile-view" aria-labelledby="club-profile-title" hidden>
+            <button type="button" class="btn back-to-matches" id="back-to-club-search">← O‘yinlarga qaytish</button>
+            <div id="club-profile-heading"></div>
+            <div class="club-profile-content" id="club-profile-content"></div>
+        </section>
+        <section class="editor-view" id="editor-view" aria-label="Shablonni tahrirlash" hidden>
+            <button type="button" class="btn back-to-templates" id="back-to-templates">← Poster shablonlariga qaytish</button>
+            <div class="workspace">
+            <section class="editor" aria-labelledby="edit-heading">
+                <div class="panel-heading">
+                    <h2 id="edit-heading">Poster sozlamalari</h2>
+                    <div class="panel-heading-actions">
+                        <span class="step">01 / Tahrirlash</span>
+                        <button type="button" class="btn btn-reset-template" id="reset-template" aria-label="Shu poster sozlamalarini standart holatga qaytarish" title="Shu poster sozlamalarini standart holatga qaytarish">↺ Standart</button>
+                    </div>
+                </div>
+                <div class="field-grid">
+                    <div class="field" id="title-field"><label for="poster-title">Sarlavha</label><textarea id="poster-title" maxlength="80" rows="1">BUGUNNING ASOSIY UCHRASHUVLARI</textarea></div>
+                    <div class="field" id="date-field"><label for="poster-date">Sana / izoh</label><input id="poster-date" maxlength="30" value="9-OKTABR"></div>
+                </div>
+                <div class="section-label" id="poster-appearance-heading"><strong>Poster ko‘rinishi</strong><span>Fon va shaxsiy logo</span></div>
+                <div class="field" id="poster-brand-logo-field">
+                    <label for="brand-logo">Poster logosi (shablonda alohida joylashadi)</label>
+                    <div class="brand-logo-controls">
+                        <label class="logo-upload brand-logo-upload" id="brand-logo-preview" title="Shaxsiy logoni yuklang">
+                            <span class="brand-logo-fallback">PP</span>
+                            <input id="brand-logo" type="file" accept="image/*" aria-label="Poster logosi">
+                        </label>
+                        <span class="hint-inline" id="brand-logo-hint">Logotip jamoa logolaridan alohida tahrirlanadi.</span>
+                        <div class="brand-logo-actions">
+                            <button type="button" class="btn btn-remove-logo" id="remove-brand-logo">Logoni olib tashlash</button>
+                            <button type="button" class="btn btn-clear-logo" id="clear-brand-logo">Standart logoni tiklash</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="field" id="brand-logo-shape-field">
+                    <span class="field-label">Logo shakli</span>
+                    <div class="brand-logo-shape-options" role="group" aria-label="Logo shakli">
+                        <button type="button" class="brand-logo-shape-option" data-brand-shape="square" aria-pressed="true">Kvadrat</button>
+                        <button type="button" class="brand-logo-shape-option" data-brand-shape="circle" aria-pressed="false">Doira</button>
+                    </div>
+                </div>
+                <div class="field-grid appearance-fields" id="poster-appearance-fields">
+                    <div class="field">
+                        <label for="background-color">Fon rangi</label>
+                        <input id="background-color" type="color" value="#ffffff">
+                    </div>
+                    <div class="field" id="row-color-field">
+                        <label for="row-color">O‘yin jadvali foni</label>
+                        <input id="row-color" type="color" value="#ffffff">
+                    </div>
+                    <div class="field" id="time-background-field">
+                        <label for="time-background-color">Vaqt katagi foni</label>
+                        <input id="time-background-color" type="color" value="#52d719">
+                    </div>
+                    <div class="field" id="background-image-field">
+                        <label for="background-image">Fon rasmi</label>
+                        <input id="background-image" class="file-input" type="file" accept="image/*">
+                        <span class="hint-inline" id="background-video-hint" hidden>Photo quote va Telegram posterlari uchun video yuklang. Video bo‘lsa, poster MP4 formatida ovozi bilan yuklab olinadi.</span>
+                        <button type="button" class="btn" id="background-video-audio" aria-pressed="false" hidden>Ovoz bilan ijro etish</button>
+                    </div>
+                    <div class="field poster-ratio-field">
+                        <span class="field-label" id="poster-ratio-label">Poster o‘lchami</span>
+                        <div class="football-news-ratio-options" id="poster-ratio-options" role="group" aria-labelledby="poster-ratio-label">
+                            <button type="button" class="football-news-ratio-option" data-ratio="1:1" aria-label="1:1 o‘lcham" aria-pressed="false">1:1</button>
+                            <button type="button" class="football-news-ratio-option" data-ratio="3:4" aria-label="3:4 o‘lcham" aria-pressed="false">3:4</button>
+                            <button type="button" class="football-news-ratio-option" data-ratio="5:6" aria-label="5:6 o‘lcham" aria-pressed="false">5:6</button>
+                            <button type="button" class="football-news-ratio-option" data-ratio="7:5" aria-label="7:5 o‘lcham" aria-pressed="false">7:5</button>
+                            <button type="button" class="football-news-ratio-option" data-ratio="16:9" aria-label="16:9 o‘lcham" aria-pressed="false">16:9</button>
+                            <button type="button" class="football-news-ratio-option" data-ratio="original" aria-label="Fon rasmning asl nisbatini ishlatish" aria-pressed="false">Asl nisbat</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="field-grid" id="football-news-controls" hidden>
+                    <div class="field">
+                        <label for="football-news-effect-color">Gradient rangi</label>
+                        <input id="football-news-effect-color" type="color" value="#000000">
+                    </div>
+                </div>
+                <div class="field-grid" id="photo-quote-controls" hidden>
+                    <div class="field">
+                        <label for="photo-quote-color">Pastki yozuv rangi</label>
+                        <input id="photo-quote-color" type="color" value="#ffffff">
+                    </div>
+                    <div class="field">
+                        <label for="photo-quote-font-size">Pastki yozuv o‘lchami (px)</label>
+                        <input id="photo-quote-font-size" type="number" min="12" max="120" step="1" value="46" inputmode="numeric">
+                    </div>
+                </div>
+                <div class="field-grid" id="matchday-poster-controls" hidden>
+                    <div class="field"><label for="matchday-league">Liga nomi</label><input id="matchday-league" type="text" maxlength="32" value="APL"></div>
+                    <div class="field"><label for="matchday-round">Tur raqami</label><input id="matchday-round" type="text" maxlength="16" value="6-tur"></div>
+                    <div class="field"><label for="matchday-stadium">Stadion nomi</label><input id="matchday-stadium" type="text" maxlength="40" value="Enfild stadioni"></div>
+                </div>
+                <div class="monthly-fixtures-controls" id="monthly-fixtures-controls" hidden>
+                    <span class="field-label monthly-channel-heading">Kanal brendi</span>
+                    <p class="hint-inline monthly-channel-hint">Pastki qismda ko‘rinadigan kanal logosi va nomini sozlang</p>
+                    <div class="field">
+                        <label for="monthly-club-search">Klubni qidiring va tanlang</label>
+                        <input id="monthly-club-search" type="search" autocomplete="off" placeholder="Klub nomini yozing…" aria-controls="monthly-club-results">
+                    </div>
+                    <div class="field">
+                        <label for="monthly-fixtures-period">Uchrashuvlar davri</label>
+                        <select id="monthly-fixtures-period">
+                            <option value="current-month">Shu oy</option>
+                            <option value="next-month">Keyingi oy</option>
+                            <option value="year">Butun yil</option>
+                        </select>
+                    </div>
+                    <p class="monthly-club-status" id="monthly-club-status" role="status" aria-live="polite">Klublar ro‘yxati yuklanmoqda…</p>
+                    <div class="monthly-club-results" id="monthly-club-results" role="list"></div>
+                    <button type="button" class="btn monthly-fixtures-refresh" id="monthly-fixtures-refresh" disabled>⟳ Uchrashuvlarni yangilash</button>
+                </div>
+                <div class="field" id="matchlist-layout-controls" hidden>
+                    <span class="field-label" id="matchlist-layout-label">Jadval ustunlari</span>
+                    <div class="matchlist-layout-options" role="group" aria-labelledby="matchlist-layout-label">
+                        <button type="button" class="matchlist-layout-option" data-columns="1" aria-pressed="true">1 ustun</button>
+                        <button type="button" class="matchlist-layout-option" data-columns="2" aria-pressed="false">2 ustun</button>
+                    </div>
+                </div>
+                <div class="field" id="today-results-theme-controls" hidden>
+                    <span class="field-label" id="today-results-theme-label">Poster mavzusi</span>
+                    <div class="today-results-theme-options" role="group" aria-labelledby="today-results-theme-label">
+                        <button type="button" class="today-results-theme-option" data-results-theme="current" aria-pressed="true">Pushti neon</button>
+                        <button type="button" class="today-results-theme-option" data-results-theme="real-madrid" aria-pressed="false">Qirollik</button>
+                        <button type="button" class="today-results-theme-option" data-results-theme="barcelona" aria-pressed="false">Granat-ko‘k</button>
+                        <button type="button" class="today-results-theme-option" data-results-theme="man-city" aria-pressed="false">Osmonrang</button>
+                        <button type="button" class="today-results-theme-option" data-results-theme="laliga" aria-pressed="false">Ispaniya</button>
+                    </div>
+                </div>
+                <div class="field result-auto-field" id="red-star-auto-field" hidden>
+                    <div class="result-auto-header">
+                        <span class="field-label">Avtomatik o‘yinlar jadvali</span>
+                    </div>
+                    <div class="result-auto-row">
+                        <button type="button" class="btn result-auto-button" id="auto-upcoming-matches-button">Avtomatik jadval</button>
+                        <span class="hint-inline">Top-5 ligalardagi uchrashuvlarni vaqt oralig‘ini tanlab yuklaydi.</span>
+                    </div>
+                </div>
+                <div class="field" id="red-star-theme-controls" hidden>
+                    <span class="field-label" id="red-star-theme-label">RED STAR FUTBOL mavzusi</span>
+                    <div class="red-star-theme-options" role="group" aria-labelledby="red-star-theme-label">
+                        <button type="button" class="red-star-theme-option" data-sf-theme="current" aria-pressed="true">Hozirgi</button>
+                        <button type="button" class="red-star-theme-option" data-sf-theme="green" aria-pressed="false">Yashil</button>
+                        <button type="button" class="red-star-theme-option" data-sf-theme="white-blue" aria-pressed="false">Oq-ko‘k</button>
+                        <button type="button" class="red-star-theme-option" data-sf-theme="blue-red" aria-pressed="false">Ko‘k-qizil</button>
+                    </div>
+                </div>
+                <div class="field result-auto-field" id="today-results-auto-field" hidden>
+                    <div class="result-auto-header">
+                        <span class="field-label">Yakunlangan uchrashuvlar</span>
+                    </div>
+                    <div class="result-auto-row">
+                        <button type="button" class="btn result-auto-button" id="auto-today-results-button">Natijalarni yangilash</button>
+                        <span class="hint-inline">06:00 dan oldin ochilsa, kechagi 06:00 dan hozirgacha bo‘lgan ESPN natijalari olinadi.</span>
+                    </div>
+                </div>
+                <div class="field" id="background-opacity-field">
+                    <label for="background-opacity">Fon rasmi ko‘rinishi <span id="opacity-value">35%</span></label>
+                    <input id="background-opacity" class="range-input" type="range" min="0" max="100" value="35">
+                </div>
+                <div class="result-controls" id="result-controls" hidden>
+                    <div class="field">
+                        <label for="league-logo">Liga logosi</label>
+                        <div class="brand-logo-controls">
+                            <label class="logo-upload brand-logo-upload" id="league-logo-preview" title="Liga logosini yuklang">
+                                <span class="brand-logo-fallback">PL</span>
+                                <input id="league-logo" type="file" accept="image/*" aria-label="Liga logosi">
+                            </label>
+                            <span class="hint-inline">Ligaga tegishli logoni yuklang yoki almashtiring.</span>
+                            <button type="button" class="btn btn-clear-logo" id="clear-league-logo">Tozalash</button>
+                        </div>
+                    </div>
+                    <div class="field result-auto-field" id="result-auto-field">
+                        <div class="result-auto-header">
+                            <span class="field-label">Natija ma’lumotlari</span>
+                            <span class="result-mode-badge result-mode-badge--manual">Manual edit</span>
+                        </div>
+                        <div class="result-auto-row">
+                            <button type="button" class="btn result-auto-button" id="auto-result-button">Avtomatik</button>
+                            <span class="hint-inline">Manual: klub nomlari va logolarini qo‘l bilan o‘zgartirish mumkin. Auto: oxirgi yakunlangan o‘yinni tanlab to‘ldiradi.</span>
+                        </div>
+                        <div class="result-auto-options" id="auto-result-options" hidden></div>
+                    </div>
+                    <div class="field">
+                        <label for="goal-scorers">Urilgan gollar</label>
+                        <span class="hint-inline">Mehmon jamoa golchilarini alohida ustunga chiqarish uchun qator ichida | belgisini yozing.</span>
+                        <textarea id="goal-scorers" maxlength="240" rows="5" aria-label="Gol mualliflari va daqiqalari">24'  C. Nkunku
+36'  P. Neto
+44'  L. Colwill
+78'  M. Cucurella</textarea>
+                    </div>
+                </div>
+                <div class="section-label" id="text-colors-heading"><strong>Yozuv ranglari</strong><span>Matnlarni alohida sozlang</span></div>
+                <div class="field-grid color-fields">
+                    <div class="field"><label for="title-color">Sarlavha</label><input id="title-color" type="color" value="#ffffff"></div>
+                    <div class="field"><label for="date-color">Sana</label><input id="date-color" type="color" value="#11d4ee"></div>
+                    <div class="field"><label for="team-color">Jamoa nomlari</label><input id="team-color" type="color" value="#ffffff"></div>
+                    <div class="field" id="time-color-field"><label id="time-color-label" for="time-color">O‘yin vaqti</label><input id="time-color" type="color" value="#3970c8"></div>
+                    <div class="field" id="brand-color-field"><label for="brand-color">Logo / pastki yozuv</label><input id="brand-color" type="color" value="#ffffff"></div>
+                </div>
+                <div class="field" id="photo-text-size-field" hidden>
+                    <label for="photo-text-size"><span id="photo-text-size-label">Asosiy matn o‘lchami</span> <span id="photo-text-size-value">100%</span></label>
+                    <input id="photo-text-size" class="range-input" type="range" min="50" max="160" step="5" value="100">
+                </div>
+                <div class="field" id="player-stats-watermark-field" hidden>
+                    <label>Himoyalangan watermark</label>
+                    <button type="button" class="btn" id="remove-player-stats-watermark">Watermarkni parol bilan olib tashlash</button>
+                </div>
+                <div class="field" id="brand-caption-field">
+                    <label for="brand-caption">Logo yonidagi yozuv</label>
+                    <input id="brand-caption" type="text" maxlength="40" value="pitchplan.uz">
+                </div>
+                <div class="field" id="brand-logo-size-field">
+                    <label for="brand-logo-size">Logo o‘lchami <span id="brand-logo-size-value">200%</span></label>
+                    <input id="brand-logo-size" class="range-input" type="range" min="10" max="500" step="5" value="200">
+                </div>
+                <div class="section-label" id="matches-section-label"><strong>Uchrashuvlar</strong><span id="matches-hint">Jamoa nomi, vaqt va logo</span></div>
+                <div class="match-list" id="match-list" aria-label="Uchrashuvlarni tahrirlash"></div>
+                <div class="editor-actions">
+                    <button type="button" class="btn btn-add" id="add-row">＋ Uchrashuv qo‘shish</button>
+                </div>
+                <p class="hint" id="editor-hint">Har bir jamoa logosi va shablon brend logosini alohida almashtiring. O‘yinlar 10 tadan oshsa jadval ikki ustunga joylashadi.</p>
+            </section>
+
+            <section class="preview-panel" aria-labelledby="preview-heading">
+                <div class="preview-top">
+                    <h2 id="preview-heading">Jonli ko‘rinish</h2>
+                    <span class="preview-size" id="preview-dimensions">JPG · 1000 × 1200 px · 5:6</span>
+                </div>
+                <div class="preview-canvas-container">
+                    <div class="canvas-wrap"><canvas id="poster" width="1000" height="1200" aria-label="Tayyorlanayotgan uchrashuvlar posteri"></canvas></div>
+                    <button type="button" class="btn preview-expand" id="preview-expand" aria-label="Katta preview ochish">⛶ Katta ko‘rish</button>
+                </div>
+                <div class="preview-top" style="margin:14px 0 0">
+                    <span class="preview-size" id="export-hint">Tahrirlar avtomatik saqlanadi. Tayyor rasmni JPG formatida yuklab oling (maksimal 2,9 MB).</span>
+                    <button type="button" class="btn btn-export" id="download">↓ JPG yuklab olish</button>
+                </div>
+                <p class="toast" id="status" role="status" aria-live="polite"></p>
+            </section>
+        </div>
+        </section>
+        </div>
+    </main>
+
+    <dialog class="club-picker-dialog red-star-password-dialog" id="red-star-password-dialog" aria-labelledby="red-star-password-title">
+        <div class="club-picker-header">
+            <div>
+                <h2 id="red-star-password-title">RED STAR FUTBOL paroli</h2>
+                <p>Posterni tahrirlash uchun parolni kiriting.</p>
+            </div>
+            <button type="button" class="btn club-picker-close" id="red-star-password-close" aria-label="Oynani yopish">×</button>
+        </div>
+        <div class="club-picker-content">
+            <form class="club-picker-tools" id="red-star-password-form">
+                <label class="club-search">
+                    <input id="red-star-password-input" type="password" inputmode="numeric" autocomplete="off" placeholder="Poster paroli" aria-label="Poster paroli" required>
+                </label>
+                <button type="submit" class="btn btn-export">Kirish</button>
+                <p class="club-picker-note" id="red-star-password-error" role="alert" hidden>Parol noto‘g‘ri. Qayta urinib ko‘ring.</p>
+            </form>
+            <p class="club-picker-note">Parolni olish uchun <a href="https://t.me/admn28" target="_blank" rel="noopener noreferrer">t.me/admn28</a> manziliga yozing.</p>
+        </div>
+    </dialog>
+
+    <dialog class="club-picker-dialog red-star-password-dialog" id="standings-logo-password-dialog" aria-labelledby="standings-logo-password-title">
+        <div class="club-picker-header">
+            <div>
+                <h2 id="standings-logo-password-title">Turnir jadvali logosi</h2>
+                <p>Standart logoni o‘zgartirish uchun parolni kiriting.</p>
+            </div>
+            <button type="button" class="btn club-picker-close" id="standings-logo-password-close" aria-label="Oynani yopish">×</button>
+        </div>
+        <div class="club-picker-content">
+            <form class="club-picker-tools" id="standings-logo-password-form">
+                <label class="club-search">
+                    <input id="standings-logo-password-input" type="password" inputmode="numeric" autocomplete="off" placeholder="Parol" aria-label="Parol" required>
+                </label>
+                <button type="submit" class="btn btn-export">Davom etish</button>
+                <p class="club-picker-note" id="standings-logo-password-error" role="alert" hidden>Parol noto‘g‘ri. Qayta urinib ko‘ring.</p>
+            </form>
+        </div>
+    </dialog>
+
+    <dialog class="club-picker-dialog" id="red-star-range-dialog" aria-labelledby="red-star-range-title">
+        <div class="club-picker-header">
+            <div>
+                <h2 id="red-star-range-title">Uchrashuvlar vaqtini tanlang</h2>
+                <p>Jadvalga qaysi vaqt oralig‘idagi o‘yinlar kiritilsin?</p>
+            </div>
+            <button type="button" class="btn club-picker-close" id="red-star-range-close" aria-label="Oynani yopish">×</button>
+        </div>
+        <div class="club-picker-content">
+            <div class="club-picker-tools">
+                <button type="button" class="btn" data-upcoming-start-day="0">Bugun 06:00 dan ertaga 06:00 gacha</button>
+                <button type="button" class="btn" data-upcoming-start-day="1">Ertaga 06:00 dan indin 06:00 gacha</button>
+            </div>
+        </div>
+    </dialog>
+
+    <dialog class="expanded-preview" id="expanded-preview" aria-label="Posterni katta ko‘rish va tahrirlash">
+        <div class="expanded-preview-header">
+            <div>
+                <strong>Posterni bevosita tahrirlash</strong>
+                <span>Matnni bosib yozing, logoni bosib rasm tanlang.</span>
+            </div>
+            <button type="button" class="btn expanded-preview-close" id="expanded-preview-close">Yopish ×</button>
+        </div>
+        <div class="expanded-preview-body">
+            <div class="expanded-canvas-stage" id="expanded-canvas-stage"></div>
+            <textarea class="canvas-inline-editor" id="canvas-inline-editor" maxlength="240" rows="1" aria-label="Tanlangan elementni bevosita tahrirlash" hidden></textarea>
+        </div>
+    </dialog>
+
+    <dialog class="club-picker-dialog" id="club-picker" aria-labelledby="club-picker-title">
+        <div class="club-picker-header">
+            <div>
+                <h2 id="club-picker-title">Klub logosini tanlang</h2>
+                <p>Ligani tanlang yoki o‘z qurilmangizdan logo yuklang.</p>
+            </div>
+            <button type="button" class="btn club-picker-close" id="club-picker-close" aria-label="Oynani yopish">×</button>
+        </div>
+        <nav class="league-tabs" id="league-tabs" aria-label="Futbol ligalari">
+            <button type="button" class="league-tab is-active" data-league="all" aria-pressed="true"><span class="league-tab-mark">★</span><span>Barcha</span></button>
+            <button type="button" class="league-tab" data-league="premier-league" aria-pressed="false"><img src="./images/ligalar/english-premier-league.ee1e9b08.png" alt=""><span>Premier Liga</span></button>
+            <button type="button" class="league-tab" data-league="laliga" aria-pressed="false"><img src="./images/ligalar/LaLiga_logo_2023.svg.webp" alt=""><span>LaLiga</span></button>
+            <button type="button" class="league-tab" data-league="serie-a" aria-pressed="false"><img src="./images/ligalar/serie_a-brandlogo.net_-512x512.png" alt=""><span>A seriya</span></button>
+            <button type="button" class="league-tab" data-league="ligue-1" aria-pressed="false"><img src="./images/ligalar/ligue-1.webp" alt=""><span>Liga 1</span></button>
+            <button type="button" class="league-tab" data-league="bundesliga" aria-pressed="false"><img src="./images/ligalar/Bundesliga_logo_(2017).svg.webp" alt=""><span>Bundesliga</span></button>
+            <button type="button" class="league-tab" data-league="saudi-pro-league" aria-pressed="false"><span class="league-tab-mark">SPL</span><span>Saudi Pro Liga</span></button>
+            <button type="button" class="league-tab" data-league="europa-league" aria-pressed="false"><span class="league-tab-mark">UEL</span><span>Yevropa Ligasi</span></button>
+            <button type="button" class="league-tab" data-league="conference-league" aria-pressed="false"><span class="league-tab-mark">UECL</span><span>Konferensiya</span></button>
+            <button type="button" class="league-tab" data-league="turkiye-super-lig" aria-pressed="false"><span class="league-tab-mark">TSL</span><span>Turkiya Ligasi</span></button>
+            <button type="button" class="league-tab" data-league="ucl" aria-pressed="false"><span class="league-tab-mark">UCL</span><span>UCL</span></button>
+            <button type="button" class="league-tab" data-league="world-cup" aria-pressed="false"><span class="league-tab-mark">WC</span><span>Jahon chempionati</span></button>
+        </nav>
+        <div class="club-picker-content">
+            <div class="club-picker-tools">
+                <label class="club-search">
+                    <span aria-hidden="true">⌕</span>
+                    <input id="club-search" type="search" placeholder="Klub nomini qidiring..." autocomplete="off" aria-label="Klub nomini qidiring">
+                </label>
+                <button type="button" class="btn device-logo-button" id="device-logo-button">＋ Qurilmadan tanlash</button>
+                <input id="device-logo-input" type="file" accept="image/*" hidden>
+            </div>
+            <div class="club-logo-grid" id="club-logo-grid" aria-live="polite"></div>
+            <p class="club-picker-note" id="club-picker-note"></p>
+        </div>
+    </dialog>
+
+    <svg aria-hidden="true" focusable="false" width="0" height="0" style="position:absolute;overflow:hidden">
+        <defs>
+            <filter id="photo-quote-glass-filter" color-interpolation-filters="sRGB" x="-8%" y="-8%" width="116%" height="116%">
+                <feTurbulence type="fractalNoise" baseFrequency="0.018 0.045" numOctaves="2" seed="8" result="glass-map"></feTurbulence>
+                <feDisplacementMap in="SourceGraphic" in2="glass-map" scale="-20" xChannelSelector="R" yChannelSelector="G" result="red-shift"></feDisplacementMap>
+                <feColorMatrix in="red-shift" type="matrix" values="1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0" result="red"></feColorMatrix>
+                <feDisplacementMap in="SourceGraphic" in2="glass-map" scale="-24" xChannelSelector="R" yChannelSelector="G" result="green-shift"></feDisplacementMap>
+                <feColorMatrix in="green-shift" type="matrix" values="0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 1 0" result="green"></feColorMatrix>
+                <feDisplacementMap in="SourceGraphic" in2="glass-map" scale="-28" xChannelSelector="R" yChannelSelector="G" result="blue-shift"></feDisplacementMap>
+                <feColorMatrix in="blue-shift" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 1 0" result="blue"></feColorMatrix>
+                <feBlend in="red" in2="green" mode="screen" result="red-green"></feBlend>
+                <feBlend in="red-green" in2="blue" mode="screen" result="rgb-glass"></feBlend>
+                <feGaussianBlur in="rgb-glass" stdDeviation="1.8"></feGaussianBlur>
+            </filter>
+            <filter id="sidebar-liquid-distortion" x="0%" y="0%" width="100%" height="100%">
+                <feTurbulence type="fractalNoise" baseFrequency="0.008 0.008" numOctaves="2" seed="92" result="sidebar-noise"></feTurbulence>
+                <feGaussianBlur in="sidebar-noise" stdDeviation="2" result="sidebar-blur"></feGaussianBlur>
+                <feDisplacementMap in="SourceGraphic" in2="sidebar-blur" scale="24" xChannelSelector="R" yChannelSelector="G"></feDisplacementMap>
+            </filter>
+        </defs>
+    </svg>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.17/dist/hls.min.js" defer></script>
+    <script src="js/image-download.js?v=4" defer></script>
+    <script src="js/app.js?v=95" defer></script>
+    <script src="js/live-matches.js?v=50" defer></script>
+    <script src="js/standings.js?v=17" defer></script>
+    <script src="js/scroll-reveal.js?v=3" defer></script>
+
+<script>
+  if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
+    window.addEventListener('load', () => navigator.serviceWorker.register('./service-worker.js').catch(console.warn));
+  }
+</script>
+\n</body>
+</html>
+    
