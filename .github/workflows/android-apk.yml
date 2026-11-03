@@ -1,32 +1,29 @@
-
-name: Build PitchPlan APK
+name: Build Android APK
 
 on:
-  workflow_dispatch:
   push:
-    branches: [main]
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - name: Checkout Source Code
         uses: actions/checkout@v4
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 20
 
-      - name: Install dependencies
-        run: npm install
-
-      - name: Setup Java
+      - name: Setup Java JDK
         uses: actions/setup-java@v4
         with:
-          distribution: temurin
-          java-version: 21
+          distribution: 'temurin'
+          java-version: '17'
 
       - name: Setup Android SDK
         run: |
@@ -36,7 +33,11 @@ jobs:
           yes | $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --licenses
           $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager "platform-tools" "platforms;android-35" "build-tools;35.0.0"
 
+      - name: Install Dependencies
+        run: npm install
 
+      - name: Build Web App
+        run: npm run build
 
       - name: Add Android platform
         run: npx cap add android
@@ -50,8 +51,8 @@ jobs:
           chmod +x gradlew
           ./gradlew assembleDebug
 
-      - name: Upload APK
+      - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: PitchPlan-APK
+          name: app-debug
           path: android/app/build/outputs/apk/debug/app-debug.apk
