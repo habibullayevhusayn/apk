@@ -36,6 +36,11 @@ jobs:
       - name: Install Capacitor CLI
         run: npm install @capacitor/core @capacitor/cli @capacitor/android
 
+      - name: Prepare Web Assets Folder
+        run: |
+          mkdir -p www
+          cp -r index.html app.js live-matches.js image-download.js BebasNeue-OFL.txt BebasNeue-Regular.ttf icon.png google226e9932aef02fb.html www/ 2>/dev/null || true
+
       - name: Add Android platform
         run: npx cap add android || true
 
