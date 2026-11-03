@@ -33,12 +33,6 @@ jobs:
           yes | $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --licenses
           $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager "platform-tools" "platforms;android-35" "build-tools;35.0.0"
 
-      - name: Install Dependencies
-        run: npm install
-
-      - name: Build Web App
-        run: npm run build
-
       - name: Add Android platform
         run: npx cap add android
 
