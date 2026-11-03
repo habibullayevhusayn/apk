@@ -39,7 +39,8 @@ jobs:
       - name: Prepare Web Assets Folder
         run: |
           mkdir -p www
-          cp -r index.html app.js live-matches.js image-download.js BebasNeue-OFL.txt BebasNeue-Regular.ttf icon.png google226e9932aef02fb.html www/ 2>/dev/null || true
+          # Ildiz papkadagi barcha fayl va papkalarni www ichiga xavfsiz nusxalash (android va .github'dan tashqari)
+          rsync -av --exclude='android' --exclude='.github' --exclude='.git' --exclude='www' ./ www/
 
       - name: Add Android platform
         run: npx cap add android || true
